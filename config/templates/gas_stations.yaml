@@ -219,7 +219,7 @@
       minutes: 0
   sensor:
     - unique_id: gas_stations_search_lowest_price_midgrade
-      name: Gas Stations Search Lowest Price (midgrade)
+      name: Gas Stations Search Lowest Price (Midgrade)
       icon: mdi:gas-station
       unit_of_measurement: USD
       state_class: measurement
