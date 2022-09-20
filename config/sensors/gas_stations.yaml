@@ -1,0 +1,61 @@
+- platform: rest
+  unique_id: gas_stations_search
+  name: Gas Stations Search
+  icon: mdi:gas-station
+  scan_interval: 3600
+  resource: https://www.gasbuddy.com/graphql
+  method: POST
+  headers:
+    Content-Type: application/json
+  payload: >
+    {
+      "operationName": "LocationBySearchTerm",
+      "variables": {
+          "maxAge": 0,
+          "search": "ZIP CODE or CITY, STATE"
+      },
+      "query": "query LocationBySearchTerm($brandId: Int, $cursor: String, $maxAge: Int, $search: String) { locationBySearchTerm(search: $search) { stations(brandId: $brandId, cursor: $cursor, maxAge: $maxAge) { count cursor { next } results {  address { country line1 line2 locality postalCode region }  fuels id name prices { cash { nickname posted_time price } credit { nickname posted_time price } } } } trends { areaName country today todayLow trend } }}"
+    }
+  state_class: measurement
+  value_template: "{{ value_json.data.locationBySearchTerm.trends.0.today }}"
+  json_attributes_path: "$.data.locationBySearchTerm"
+  json_attributes:
+    - stations
+    - trends
+
+- platform: rest
+  unique_id: gas_station
+  name: Gas Station
+  icon: mdi:gas-station
+  scan_interval: 3600
+  resource: https://www.gasbuddy.com/graphql
+  method: POST
+  headers:
+    Content-Type: application/json
+  payload: >
+    {
+      "operationName": "GetStation",
+      "variables": {
+        "id": "STATION ID - RETRIEVE FROM RESULTS OF sensor.gas_stations_search"
+      },
+      "query": "query GetStation($id: ID!) { station(id: $id) { fuels prices { cash { posted_time price } credit { posted_time price } } } }"
+    }
+  unit_of_measurement: USD
+  value_template: >
+    {% set vars = namespace(price=None) %}
+    {% if value_json.data.station.prices.0.cash != None
+      and value_json.data.station.prices.0.cash.price != None 
+      and value_json.data.station.prices.0.cash.price > 0 %} 
+      {% set vars.price = value_json.data.station.prices.0.cash.get('price') %}
+    {% endif %}
+    {% if value_json.data.station.prices.0.credit != None
+      and value_json.data.station.prices.0.credit.price != None
+      and value_json.data.station.prices.0.credit.price > 0
+      and (vars.price == None or value_json.data.station.prices.0.credit.price < vars.price) %}
+      {% set vars.price = value_json.data.station.prices.0.credit.price %}
+    {% endif %}       
+    {{ vars.price }}
+  json_attributes_path: "$.data.station"
+  json_attributes:
+    - fuels
+    - prices

@@ -1,0 +1,28 @@
+homeassistant:
+  name: Home
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  elevation: !secret home_elevation
+
+  customize: !include customize.yaml
+  packages: !include_dir_named packages
+
+zone:
+  # This will override the default home zone
+  - name: Home
+    latitude: !secret home_latitude
+    longitude: !secret home_longitude
+    radius: 16
+    icon: mdi:account-multiple
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+sensor: !include_dir_merge_list sensors/
+template: !include_dir_merge_list templates/
+
+
