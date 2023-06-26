@@ -14,7 +14,7 @@
           "maxAge": 0,
           "search": "ZIP CODE or CITY, STATE"
       },
-      "query": "query LocationBySearchTerm($brandId: Int, $cursor: String, $maxAge: Int, $search: String) { locationBySearchTerm(search: $search) { stations(brandId: $brandId, cursor: $cursor, maxAge: $maxAge) { count cursor { next } results {  address { country line1 line2 locality postalCode region }  fuels id name prices { cash { nickname posted_time price } credit { nickname posted_time price } } } } trends { areaName country today todayLow trend } }}"
+      "query": "query LocationBySearchTerm($brandId: Int, $cursor: String, $maxAge: Int, $search: String) { locationBySearchTerm(search: $search) { stations(brandId: $brandId, cursor: $cursor, maxAge: $maxAge) { count cursor { next } results {  address { country line1 line2 locality postalCode region }  fuels id name prices { cash { nickname postedTime price } credit { nickname postedTime price } } } } trends { areaName country today todayLow trend } }}"
     }
   state_class: measurement
   value_template: "{{ value_json.data.locationBySearchTerm.trends.0.today }}"
@@ -38,7 +38,7 @@
       "variables": {
         "id": "STATION ID - RETRIEVE FROM RESULTS OF sensor.gas_stations_search"
       },
-      "query": "query GetStation($id: ID!) { station(id: $id) { fuels prices { cash { posted_time price } credit { posted_time price } } } }"
+      "query": "query GetStation($id: ID!) { station(id: $id) { fuels prices { cash { postedTime price } credit { postedTime price } } } }"
     }
   unit_of_measurement: USD
   value_template: >
